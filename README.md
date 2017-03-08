@@ -1,6 +1,6 @@
 [TOC]
 
-# Introduction {#Introduction}
+# Introduction
 
 Welcome to Pression, a C++ library for implementing and loading
 compression and CPU-GPU data transfer plugins.
@@ -22,7 +22,7 @@ available from [Eyescale](http://www.eyescale.ch). Please contact
 [info@eyescale.ch](mailto:info@eyescale.ch?subject=Pression%20support)
 for further information.
 
-# Features {#Features}
+# Features
 
 Pression provides the following major features:
 
@@ -31,16 +31,17 @@ Pression provides the following major features:
   pression::PluginRegistry, pression::Uploader
 * Detailed @ref Changelog
 
-# Building {#Building}
+# Building
 
 Pression is a cross-platform library, designed to run on any modern
 operating system, including all Unix variants and the Windows operating
-system. Pression uses CMake to create a platform-specific build
-environment. The following platforms and build environments are tested:
+system. It requires a C++11 compiler and uses CMake to create a
+platform-specific build environment. The following platforms and build
+environments are tested:
 
-* Linux: Ubuntu 14.04, RHEL 6.6 (Makefile, Ninja)
+* Linux: Ubuntu 16.04, RHEL 6.8 (Makefile, Ninja)
 * Windows: 7 (Visual Studio 2012)
-* Mac OS X: 10.8 (Makefile, Ninja)
+* Mac OS X: 10.9 (Makefile, Ninja)
 
 Building from source is as simple as:
 
@@ -48,5 +49,17 @@ Building from source is as simple as:
     git clone https://github.com/Eyescale/Pression.git
     mkdir Pression/build
     cd Pression/build
-    cmake ..
-    make
+    cmake -GNinja ..
+    ninja
+
+# FAQ
+
+## On what basis where the compression parameters determined?
+
+They are relative numbers when compared to the RLE compressor and the
+data compressed. Since both change over time with new compilers, CPUs
+and tested data, they are a somewhat arbitrary snapshot. Typically, all
+compressor parameters are updated when a new plugin is added on a
+representative visualization cluster node at the time. They are
+determined by running the tests/compressor benchmark which calculates
+them.

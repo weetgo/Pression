@@ -1,5 +1,5 @@
 
-/* Copyright (c) 2013-2014, Stefan.Eilemann@epfl.ch
+/* Copyright (c) 2013-2016, Stefan.Eilemann@epfl.ch
  *
  * This file is part of Pression <https://github.com/Eyescale/Pression>
  *
@@ -20,13 +20,16 @@
 #ifndef PRESSION_DOWNLOADER_H
 #define PRESSION_DOWNLOADER_H
 
+#include <lunchbox/thread.h> // thread-safety macros
 #include <pression/api.h>
 #include <pression/types.h>
-#include <lunchbox/thread.h>         // thread-safety macros
 
 namespace pression
 {
-namespace detail { class Downloader; }
+namespace detail
+{
+class Downloader;
+}
 
 /** A C++ class to handle one downloader plugin instance. */
 class Downloader
@@ -38,14 +41,12 @@ public:
     /**
      * Construct a new, named downloader instance.
      *
-     * @param from the plugin registry.
      * @param name the name of the downloader.
      * @param gl the OpenGL function table to verify that the plugin is
      *           compatible with this GL implementation.
-     * @version 1.7.1
+     * @version 2.0
      */
-    PRESSION_API Downloader( PluginRegistry& from, const uint32_t name,
-                             const GLEWContext* gl = 0 );
+    PRESSION_API Downloader(const uint32_t name, const GLEWContext* gl = 0);
 
     /** Destruct this downloader. @version 1.7.1 */
     PRESSION_API virtual ~Downloader();
@@ -57,14 +58,14 @@ public:
      * @return true if the instance is usable for the given name.
      * @version 1.7.1
      */
-    PRESSION_API bool uses( const uint32_t name ) const;
+    PRESSION_API bool uses(const uint32_t name) const;
 
     /**
      * @return true if the download supports the given parameters.
      * @version 1.7.1
      */
-    PRESSION_API bool supports( const uint32_t inputToken, const bool noAlpha,
-                                const uint64_t capabilities ) const;
+    PRESSION_API bool supports(const uint32_t inputToken, const bool noAlpha,
+                               const uint64_t capabilities) const;
 
     /**
      * Find the best downloader in all plugins for the given parameters.
@@ -73,21 +74,19 @@ public:
      * the downloader which supports the given parameters and provides the
      * highest speed.
      *
-     * @param from the plugin registry to choose from.
      * @param internalFormat the input token type to the downloader.
      * @param minQuality the minimum quality.
      * @param ignoreAlpha true if the downloader may drop the alpha channel.
      * @param capabilities the capabilities required by the downloader.
      * @param gl the OpenGL function table.
      * @return the name of the chosen downloader.
-     * @version 1.7.1
+     * @version 2.0
      */
-    static PRESSION_API uint32_t choose( const PluginRegistry& from,
-                                         const uint32_t internalFormat,
-                                         const float minQuality,
-                                         const bool ignoreAlpha,
-                                         const uint64_t capabilities,
-                                         const GLEWContext* gl );
+    static PRESSION_API uint32_t choose(const uint32_t internalFormat,
+                                        const float minQuality,
+                                        const bool ignoreAlpha,
+                                        const uint64_t capabilities,
+                                        const GLEWContext* gl);
 
     /** @return the information about the allocated instance. @version 1.7.1 */
     PRESSION_API const EqCompressorInfo& getInfo() const;
@@ -95,25 +94,22 @@ public:
     /**
      * Set up a new, named downloader instance.
      *
-     * @param from the plugin registry.
      * @param name the name of the downloader.
      * @param gl the OpenGL function table to verify that the plugin is
      *           compatible with this GL implementation.
      * @return true on success, false otherwise.
-     * @version 1.7.1
+     * @version 2.0
      */
-    PRESSION_API bool setup( PluginRegistry& from, const uint32_t name,
-                             const GLEWContext* gl = 0 );
+    PRESSION_API bool setup(const uint32_t name, const GLEWContext* gl = 0);
 
     /**
      * Set up a new, auto-selected downloader instance.
      * @sa choose() for parameters.
-     * @version 1.7.1
+     * @version 2.0
      */
-    PRESSION_API bool setup( PluginRegistry& from,const uint32_t internalFormat,
-                             const float minQuality, const bool ignoreAlpha,
-                             const uint64_t capabilities,
-                             const GLEWContext* gl );
+    PRESSION_API bool setup(const uint32_t internalFormat,
+                            const float minQuality, const bool ignoreAlpha,
+                            const uint64_t capabilities, const GLEWContext* gl);
 
     /** Reset to EQ_COMPRESSOR_NONE. @version 1.7.1 */
     PRESSION_API void clear();
@@ -131,9 +127,9 @@ public:
      *         performed.
      * @version 1.7.1
      */
-    PRESSION_API bool start( void** buffer, const uint64_t inDims[4],
-                             const uint64_t flags, uint64_t outDims[4],
-                             const unsigned source, const GLEWContext* gl );
+    PRESSION_API bool start(void** buffer, const uint64_t inDims[4],
+                            const uint64_t flags, uint64_t outDims[4],
+                            const unsigned source, const GLEWContext* gl);
 
     /**
      * Finish download data from the GPU to the CPU
@@ -145,15 +141,15 @@ public:
      * @param gl the OpenGL function table.
      * @version 1.7.1
      */
-    PRESSION_API void finish( void** buffer, const uint64_t inDims[4],
-                              const uint64_t flags, uint64_t outDims[4],
-                              const GLEWContext* gl );
+    PRESSION_API void finish(void** buffer, const uint64_t inDims[4],
+                             const uint64_t flags, uint64_t outDims[4],
+                             const GLEWContext* gl);
 
 private:
-    Downloader( const Downloader& );
-    Downloader operator=( const Downloader& );
+    Downloader(const Downloader&);
+    Downloader operator=(const Downloader&);
     detail::Downloader* const impl_;
-    LB_TS_VAR( _thread );
+    LB_TS_VAR(_thread);
 };
 }
-#endif  // PRESSION_DOWNLOADER_H
+#endif // PRESSION_DOWNLOADER_H
